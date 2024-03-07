@@ -1,0 +1,8 @@
+<launch>
+
+  <node pkg="viz_ros1" name="test_rviz" type="test_rviz_node" output="screen">
+
+  </node>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find viz_ros1)/rviz/test.rviz" required="true" />
+
+</launch>
