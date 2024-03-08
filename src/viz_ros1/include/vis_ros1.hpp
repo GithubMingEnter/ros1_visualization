@@ -73,7 +73,7 @@ namespace vis
                             Color color = blue,
                             double a = 1)
         {
-            marker.color.a = a;
+            marker.color.a = a>1e-5? a:0.9;
             switch (color)
             {
             case white:
@@ -154,7 +154,13 @@ namespace vis
             marker.scale.y = scale_xyz(1);
             marker.scale.z = scale_xyz(2);
         }
-
+        void setMarkerScale(visualization_msgs::Marker &marker,
+                                    const double &scale)
+        {
+            marker.scale.x = scale;
+            marker.scale.y = scale;
+            marker.scale.z = scale;
+        }    
     public:
         ~displayRviz(){};
         displayRviz(ros::NodeHandle &nh) : nh_(nh){
@@ -440,7 +446,7 @@ namespace vis
         }
         template <class _topic>
         void vis_PointList(const _topic &topic, const std::vector<Eigen::Vector2d> &list, double scale, 
-										Eigen::Vector4d color, int id)
+										const Color color = blue, int id=0)
         {
             auto pub_iter = vis_pub_map_.find(topic);
             if (pub_iter == vis_pub_map_.end())
@@ -456,13 +462,8 @@ namespace vis
             sphere.id = id;
 
             sphere.pose.orientation.w = 1.0;
-            sphere.color.r = color(0);
-            sphere.color.g = color(1);
-            sphere.color.b = color(2);
-            sphere.color.a = color(3) > 1e-5 ? color(3) : 1.0;
-            sphere.scale.x = scale;
-            sphere.scale.y = scale;
-            sphere.scale.z = scale;
+            setMarkerColor(sphere, color);
+            setMarkerScale(sphere, scale);
 
             geometry_msgs::Point pt;
             for (int i = 0; i < int(list.size()); i++)

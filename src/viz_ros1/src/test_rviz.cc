@@ -21,6 +21,7 @@ public:
         vis_ptr_->enroll<sensor_msgs::PointCloud2>("global_point_cloud");
         vis_ptr_->enroll<vMarkers>("global_marker");
         vis_ptr_->enroll<vMarkers>("robot_path");
+        vis_ptr_->enroll<vMarker>("point_list");
     }
     ~testDisplayRviz(){};
     int run(){
@@ -59,6 +60,12 @@ public:
         transform_stamp_.transform.rotation.w=q.w();
         ros::Rate rate(10);
         ROS_INFO_STREAM("globals size = "<<globals.size());
+
+        Vec2ds point_list;
+        for(int i=3;i<6;i++)
+        {
+            point_list.emplace_back(Vec2d(i,i));
+        }
         while(ros::ok()){
             transform_stamp_.header.stamp=ros::Time::now();
             tfb_.sendTransform(transform_stamp_);
@@ -68,6 +75,9 @@ public:
             // vis_ptr_->vis_path_point<Vec3ds,std::string>(global_path,"global_path");
             // vis_ptr_->vis_path_strip(globals,"global_marker","map",0.02,vis::Color::pink);
             vis_ptr_->vis_path_robot<Vec3ds,std::string>(global_path,"robot_path",0.5,0.15,0.1,0.1);
+
+            vis_ptr_->vis_PointList<std::string>("point_list",point_list,0.3);
+
             ros::spinOnce();
             rate.sleep();
         }
